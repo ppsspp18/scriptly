@@ -1,17 +1,21 @@
 import streamlit as st
-import requests
-from config import PAGE_TITLE, PAGE_ICON
 
-st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON, layout="wide")
+from config import (
+    PAGE_TITLE,
+    PAGE_ICON
+)
 
-if "play_id" not in st.session_state:
-    st.session_state["play_id"] = None
-if "play_name" not in st.session_state:
-    st.session_state["play_name"] = None
-if "act" not in st.session_state:
-    st.session_state["act"] = None
-if "scene_id" not in st.session_state:
-    st.session_state["scene_id"] = None
+from utils.session import (
+    initialize_session
+)
+
+st.set_page_config(
+    page_title=PAGE_TITLE,
+    page_icon=PAGE_ICON,
+    layout="wide"
+)
+
+initialize_session()
 
 st.title("📖 Scriptly")
 st.subheader("Explore Shakespeare's Plays")

@@ -22,6 +22,7 @@ def get_scene(scene_id: int):
 
         speeches.append(
             {
+                "speech_id": speech["_id"],
                 "character": character["name"],
                 "start_line": speech["start_line"],
                 "end_line": speech["end_line"],
