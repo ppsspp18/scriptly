@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scriptly — Read Shakespeare</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="sidebar-open">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">Scriptly</span>
+      <span class="brand-sub">Read Shakespeare's plays</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="theme-toggle" class="btn ghost" title="Toggle theme">◐ Theme</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <button id="sidebar-arrow" class="sidebar-arrow" title="Hide panel" aria-label="Toggle sidebar">◀</button>
+    <aside class="sidebar" id="sidebar">
+      <section class="panel">
+        <h2>Plays</h2>
+        <input id="play-filter" type="search" placeholder="Filter plays…" autocomplete="off" />
+        <ul id="play-list" class="play-list" aria-label="List of plays"></ul>
+      </section>
+
+      <section class="panel hidden" id="scene-panel">
+        <h2 id="scene-panel-title">Scenes</h2>
+        <div id="character-search" class="hidden">
+          <input id="character-input" type="text" placeholder="Lines by character (e.g. HAMLET)" autocomplete="off" />
+          <button id="character-btn" class="btn small">Find lines</button>
+        </div>
+        <div id="scene-list"></div>
+      </section>
+    </aside>
+
+    <section class="reader">
+      <div id="welcome" class="welcome">
+        <h1>Welcome to Scriptly</h1>
+        <p>Pick a play from the list to begin reading.</p>
+      </div>
+
+      <div id="reader-view" class="reader-view hidden">
+        <div class="reader-inner">
+          <div class="reader-header">
+            <button id="back-btn" class="btn ghost">← Plays</button>
+            <h1 id="play-title"></h1>
+          </div>
+
+          <div class="scene-nav">
+            <button id="prev-scene" class="btn">← Prev scene</button>
+            <span id="scene-label"></span>
+            <button id="next-scene" class="btn">Next scene →</button>
+          </div>
+
+          <div id="script" class="script" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="status" class="status hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
