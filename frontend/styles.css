@@ -59,13 +59,16 @@ body {
 /* Layout */
 .layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 300px 1fr 320px;
   gap: 0;
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   width: 100%;
   position: relative;
 }
+
+body:not(.sidebar-open) .layout { grid-template-columns: 0 1fr 320px; }
+body:not(.sidebar-open) .sidebar { visibility: hidden; }
 
 body:not(.sidebar-open) .layout { grid-template-columns: 0 1fr; }
 body:not(.sidebar-open) .sidebar { visibility: hidden; }
@@ -101,6 +104,14 @@ body:not(.sidebar-open) .sidebar-arrow {
   border-right: 1px solid var(--border);
   min-height: calc(100vh - 57px);
   overflow-y: auto;
+}
+
+/* Right AI sidebar */
+.ai-sidebar {
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: calc(100vh - 57px);
 }
 
 .panel { padding: 1rem; }
@@ -250,6 +261,76 @@ body:not(.sidebar-open) .layout { max-width: none; }
   margin-bottom: 1.2rem;
 }
 
+/* AI: Ask Scriptly */
+.ask-form { display: flex; gap: 0.4rem; }
+.ask-form input[type="text"] { margin-bottom: 0; flex: 1; }
+
+.ask-results { margin-top: 0.9rem; display: flex; flex-direction: column; gap: 0.8rem; }
+
+.ask-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+  background: var(--bg);
+}
+.ask-item .answer {
+  margin: 0.5rem 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.badge {
+  display: inline-block;
+  font-family: system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+.badge-cache { background: #e5f6e8; color: #1c7c33; border: 1px solid #b4e0bd; }
+.badge-pipeline { background: #e8eefc; color: #24509c; border: 1px solid #bcccf2; }
+[data-theme="dark"] .badge-cache { background: #17301d; color: #7fd694; border-color: #2a4f34; }
+[data-theme="dark"] .badge-pipeline { background: #1a2440; color: #93b3f0; border-color: #2b3a63; }
+
+.citations { margin-top: 0.5rem; }
+.cite-label { font-size: 0.75rem; color: var(--muted); margin-right: 0.35rem; }
+.citation {
+  display: inline-block;
+  margin: 0.15rem 0.25rem 0.15rem 0;
+  padding: 0.18rem 0.5rem;
+  font-size: 0.76rem;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--accent);
+  cursor: pointer;
+}
+.citation:hover { border-color: var(--accent); text-decoration: underline; }
+
+/* Insights panel */
+.chip-group { margin-bottom: 0.7rem; }
+.chip-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.chip {
+  font-size: 0.78rem;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  cursor: default;
+}
+
 /* Status toast */
 .status {
   position: fixed;
@@ -277,4 +358,9 @@ body:not(.sidebar-open) .layout { max-width: none; }
     visibility: visible !important;
   }
   body.sidebar-open .sidebar { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
+  .ai-sidebar {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    min-height: auto;
+  }
 }

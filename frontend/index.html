@@ -59,6 +59,22 @@
         </div>
       </div>
     </section>
+
+    <aside class="ai-sidebar" id="ai-sidebar">
+      <section class="panel">
+        <h2>Ask Scriptly</h2>
+        <form id="ask-form" class="ask-form">
+          <input id="ask-input" type="text" placeholder="Ask across all plays… e.g. Compare Macbeth and Lady Macbeth's guilt" autocomplete="off" />
+          <button type="submit" class="btn small" id="ask-btn">Ask</button>
+        </form>
+        <div id="ask-results" class="ask-results"></div>
+      </section>
+
+      <section class="panel hidden" id="insights-panel">
+        <h2>Scene Insights</h2>
+        <div id="insights-content"></div>
+      </section>
+    </aside>
   </main>
 
   <div id="status" class="status hidden"></div>

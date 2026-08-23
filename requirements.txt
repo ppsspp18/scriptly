@@ -1,6 +1,17 @@
+# Django & API
 django>=5.2,<5.3
 djangorestframework
+
+# Database & Data Processing
 pymysql
-pandas
 mysql-connector-python
 sqlalchemy
+pandas
+
+# AI, Vector Store & NLP (RAG Pipeline)
+chromadb
+sentence-transformers
+spacy
+langgraph
+langchain-groq
+python-dotenv

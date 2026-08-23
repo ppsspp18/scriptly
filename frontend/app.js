@@ -24,6 +24,12 @@ const els = {
   script: document.getElementById('script'),
   themeToggle: document.getElementById('theme-toggle'),
   status: document.getElementById('status'),
+  askForm: document.getElementById('ask-form'),
+  askInput: document.getElementById('ask-input'),
+  askBtn: document.getElementById('ask-btn'),
+  askResults: document.getElementById('ask-results'),
+  insightsPanel: document.getElementById('insights-panel'),
+  insightsContent: document.getElementById('insights-content'),
 };
 
 let plays = [];
@@ -172,6 +178,7 @@ async function loadScene(index) {
     els.sceneLabel.textContent =
       `${currentPlay.name} — Act ${roman(scene.act)}, Scene ${scene.scene}`;
     renderSpeeches(speeches);
+    loadInsights(scene.id);
   } catch (err) {
     console.error(err);
     els.script.innerHTML = '<p class="stage-direction">Failed to load this scene.</p>';
@@ -275,12 +282,123 @@ async function showCharacterLines() {
   }
 }
 
+/* ---------- AI: Ask Scriptly (RAG + semantic cache) ---------- */
+
+function sourceBadge(source, seconds) {
+  const t = `${seconds}s`;
+  if (source === 'semantic_cache') {
+    return `<span class="badge badge-cache">⚡ Cached (${t})</span>`;
+  }
+  return `<span class="badge badge-pipeline">🤖 LangGraph Pipeline (${t})</span>`;
+}
+
+async function askScriptly(event) {
+  event.preventDefault();
+  const query = els.askInput.value.trim();
+  if (!query) return;
+
+  els.askBtn.disabled = true;
+  els.askResults.innerHTML =
+    '<div class="ask-item"><p class="stage-direction">Consulting the bard…</p></div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/ask/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `API error ${res.status}`);
+
+    const item = document.createElement('div');
+    item.className = 'ask-item';
+    const citations = data.citations || [];
+    item.innerHTML = `
+      <div class="ask-meta">${sourceBadge(data.source, data.time_seconds)}</div>
+      <p class="answer">${esc(data.answer)}</p>
+      ${citations.length ? `
+        <div class="citations">
+          <span class="cite-label">Sources:</span>
+          ${citations.map((c, i) => `
+            <button class="citation" data-idx="${i}"
+              title="Jump to ${esc(c.play_name)}, Act ${roman(c.act)}, Scene ${c.scene}">
+              ${esc((c.play_name || '').replace(/^\d+\s*/, ''))} — Act ${roman(c.act)}, Sc ${c.scene}
+            </button>`).join('')}
+        </div>` : ''}
+    `;
+    item.querySelectorAll('.citation').forEach((btn) => {
+      btn.addEventListener('click', () => jumpToCitation(citations[Number(btn.dataset.idx)]));
+    });
+    els.askResults.prepend(item);
+    els.askInput.value = '';
+  } catch (err) {
+    console.error(err);
+    els.askResults.innerHTML =
+      `<div class="ask-item"><p class="stage-direction">${esc(err.message)}</p></div>`;
+  } finally {
+    els.askBtn.disabled = false;
+  }
+}
+
+/* ---------- Interactive citation jumping (deep linking) ---------- */
+
+async function jumpToCitation(citation) {
+  if (!citation) return;
+  const norm = (s) => (s || '').toLowerCase().replace(/^\d+\s*/, '').trim();
+  const play = plays.find((p) => norm(p.name) === norm(citation.play_name));
+  const target = play || currentPlay;
+  if (!target) return;
+
+  if (!currentPlay || currentPlay.id !== target.id) {
+    await selectPlay(target);
+  }
+
+  const idx = scenes.findIndex(
+    (s) => s.act === citation.act && s.scene === citation.scene
+  );
+  if (idx >= 0) loadScene(idx);
+}
+
+/* ---------- Entity & character insights panel ---------- */
+
+const insightsCache = new Map();
+
+async function loadInsights(sceneId) {
+  if (!insightsCache.has(sceneId)) {
+    try {
+      insightsCache.set(sceneId, await api(`/scenes/${sceneId}/insights/`));
+    } catch (err) {
+      console.error(err);
+      return;
+    }
+  }
+  const data = insightsCache.get(sceneId);
+  const hasAny = data.characters.length || data.locations.length || data.themes.length;
+  els.insightsPanel.classList.toggle('hidden', !hasAny);
+  if (!hasAny) return;
+
+  const chipRow = (label, items) =>
+    items.length
+      ? `<div class="chip-group"><span class="chip-label">${label}</span>
+          <div class="chips">${items
+            .map((e) => `<span class="chip" title="Mentioned ${e.count}×">${esc(e.text)}</span>`)
+            .join('')}</div></div>`
+      : '';
+
+  els.insightsContent.innerHTML = [
+    chipRow('Characters', data.characters),
+    chipRow('Locations', data.locations),
+    chipRow('Themes & Entities', data.themes),
+  ].join('');
+}
+
 /* ---------- events ---------- */
 
 els.backBtn.addEventListener('click', () => {
   els.readerView.classList.add('hidden');
   els.welcome.classList.remove('hidden');
   els.scenePanel.classList.add('hidden');
+  els.insightsPanel.classList.add('hidden');
   currentPlay = null;
   currentSceneIndex = -1;
   markActivePlay();
@@ -295,6 +413,8 @@ els.characterBtn.addEventListener('click', showCharacterLines);
 els.characterInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') showCharacterLines();
 });
+
+els.askForm.addEventListener('submit', askScriptly);
 
 els.sidebarArrow.addEventListener('click', () => {
   const open = document.body.classList.toggle('sidebar-open');

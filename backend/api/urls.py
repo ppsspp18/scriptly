@@ -1,10 +1,12 @@
 from django.urls import path
 
 from .views import (
+    AskShakespeareView,
     CharacterSpeechListView,
     PlayDetailView,
     PlayListView,
     PlaySceneListView,
+    SceneInsightsView,
     SceneSpeechListView,
 )
 
@@ -18,4 +20,6 @@ urlpatterns = [
         name='character-speeches',
     ),
     path('scenes/<int:scene_id>/speeches/', SceneSpeechListView.as_view(), name='scene-speeches'),
+    path('scenes/<int:scene_id>/insights/', SceneInsightsView.as_view(), name='scene-insights'),
+    path('ask/', AskShakespeareView.as_view(), name='ask-shakespeare'),
 ]

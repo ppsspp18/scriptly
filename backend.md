@@ -49,13 +49,26 @@ Base URL: `/api/`
 | GET | `/api/plays/{play_id}/` | Single play detail |
 | GET | `/api/plays/{play_id}/scenes/` | Scenes of a play, ordered by act/scene |
 | GET | `/api/scenes/{scene_id}/speeches/` | Full script of a scene in order |
-| GET | `/api/plays/{play_id}/characters/{name}/speeches/` | All lines of a character in a play |
+| GET | `/api/plays/{play_id}/characters/{name}/speeches/` | All lines of a character in a play (case-insensitive) |
+| POST | `/api/ask/` | RAG Q&A: body `{"query": "…"}` → `answer`, `source`, `time_seconds`, `citations` |
+| GET | `/api/scenes/{scene_id}/insights/` | spaCy entity insights (characters, locations, themes) |
 
 Example:
 
 ```bash
 curl http://127.0.0.1:8000/api/plays/
 ```
+
+## AI / RAG stack
+
+- **Embeddings**: `sentence-transformers/all-MiniLM-L6-v2` (`api/embeddings.py`)
+- **Vector store**: ChromaDB at repo-root `./chroma_db/` — collections
+  `shakespeare_speeches` (documents + spaCy metadata) and `semantic_cache`
+  (`api/retrieval.py`, populated by root-level `ingest_data.py`)
+- **Agent**: LangGraph state graph — grade → (rewrite loop, max 2) → generate,
+  with structured-output relevance grading in `json_schema` mode (`api/agent.py`)
+- **LLM**: Groq-hosted `openai/gpt-oss-20b` via `langchain-groq`;
+  requires `GROQ_API_KEY` in `.env` at the repo root (loaded by settings.py)
 
 ## Frontend
 
@@ -73,6 +86,9 @@ Open http://127.0.0.1:5500 in your browser.
 
 Features: play list with filter, act/scene navigation with prev/next buttons,
 script reading view (speaker names + stage directions), search all lines by a
-character within a play, dark/light theme toggle.
+character within a play, dark/light theme toggle. Right AI sidebar: "Ask
+Scriptly" natural-language search with source/latency badges (⚡ cached vs
+🤖 LangGraph pipeline), clickable citations that jump the reader to the cited
+play/act/scene, and per-scene spaCy entity insights.
 
 The API base URL is set to `http://127.0.0.1:8000/api` at the top of `frontend/app.js`.
