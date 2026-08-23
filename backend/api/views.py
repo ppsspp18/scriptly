@@ -62,7 +62,7 @@ def fetch_more_context(query_string):
     results = retriever.collection.query(query_embeddings=[query_vector], n_results=5)
     return results["documents"][0]
 
-# Initialize the LangGraph agent (Groq: openai/gpt-oss-20b)
+# Initialize the LangGraph agent (Groq: openai/gpt-oss-120b)
 agent = ShakespeareAgent(fetch_context_callback=fetch_more_context)
 
 class AskShakespeareView(APIView):

@@ -292,14 +292,21 @@ function sourceBadge(source, seconds) {
   return `<span class="badge badge-pipeline">🤖 LangGraph Pipeline (${t})</span>`;
 }
 
+function renderMarkdown(text) {
+  const raw = marked.parse(text || '', { breaks: true, gfm: true });
+  return DOMPurify.sanitize(raw);
+}
+
 async function askScriptly(event) {
   event.preventDefault();
   const query = els.askInput.value.trim();
   if (!query) return;
 
   els.askBtn.disabled = true;
-  els.askResults.innerHTML =
-    '<div class="ask-item"><p class="stage-direction">Consulting the bard…</p></div>';
+  const loading = document.createElement('div');
+  loading.className = 'ask-item';
+  loading.innerHTML = '<p class="stage-direction">Consulting the bard…</p>';
+  els.askResults.prepend(loading);
 
   try {
     const res = await fetch(`${API_BASE}/ask/`, {
@@ -310,12 +317,13 @@ async function askScriptly(event) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `API error ${res.status}`);
 
+    loading.remove();
     const item = document.createElement('div');
     item.className = 'ask-item';
     const citations = data.citations || [];
     item.innerHTML = `
       <div class="ask-meta">${sourceBadge(data.source, data.time_seconds)}</div>
-      <p class="answer">${esc(data.answer)}</p>
+      <div class="answer md">${renderMarkdown(data.answer)}</div>
       ${citations.length ? `
         <div class="citations">
           <span class="cite-label">Sources:</span>
@@ -333,8 +341,13 @@ async function askScriptly(event) {
     els.askInput.value = '';
   } catch (err) {
     console.error(err);
-    els.askResults.innerHTML =
-      `<div class="ask-item"><p class="stage-direction">${esc(err.message)}</p></div>`;
+    loading.remove();
+    els.askResults.prepend(
+      Object.assign(document.createElement('div'), {
+        className: 'ask-item',
+        innerHTML: `<p class="stage-direction">${esc(err.message)}</p>`,
+      })
+    );
   } finally {
     els.askBtn.disabled = false;
   }

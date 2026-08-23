@@ -277,8 +277,60 @@ body:not(.sidebar-open) .layout { max-width: none; }
   margin: 0.5rem 0;
   font-size: 0.92rem;
   line-height: 1.55;
-  white-space: pre-wrap;
 }
+
+/* Markdown-rendered answers */
+.answer.md > :first-child { margin-top: 0; }
+.answer.md > :last-child { margin-bottom: 0; }
+.answer.md p { margin: 0.5rem 0; white-space: pre-wrap; }
+.answer.md h1, .answer.md h2, .answer.md h3,
+.answer.md h4, .answer.md h5, .answer.md h6 {
+  margin: 0.8rem 0 0.4rem;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.answer.md h2 { font-size: 1.05rem; }
+.answer.md h1 { font-size: 1.15rem; }
+.answer.md ul, .answer.md ol { margin: 0.5rem 0; padding-left: 1.3rem; }
+.answer.md li { margin: 0.25rem 0; }
+.answer.md blockquote {
+  margin: 0.6rem 0;
+  padding: 0.3rem 0.8rem;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
+  font-style: italic;
+}
+.answer.md code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+}
+.answer.md pre {
+  margin: 0.6rem 0;
+  padding: 0.6rem 0.8rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+.answer.md pre code { background: none; border: none; padding: 0; }
+.answer.md table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.6rem 0;
+  font-size: 0.86rem;
+}
+.answer.md th, .answer.md td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+}
+.answer.md th { background: var(--panel); }
+.answer.md hr { border: none; border-top: 1px solid var(--border); margin: 0.8rem 0; }
+.answer.md a { color: var(--accent); }
 
 .badge {
   display: inline-block;

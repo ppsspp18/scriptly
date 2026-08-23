@@ -67,7 +67,7 @@ curl http://127.0.0.1:8000/api/plays/
   (`api/retrieval.py`, populated by root-level `ingest_data.py`)
 - **Agent**: LangGraph state graph — grade → (rewrite loop, max 2) → generate,
   with structured-output relevance grading in `json_schema` mode (`api/agent.py`)
-- **LLM**: Groq-hosted `openai/gpt-oss-20b` via `langchain-groq`;
+- **LLM**: Groq-hosted `openai/gpt-oss-120b` via `langchain-groq`;
   requires `GROQ_API_KEY` in `.env` at the repo root (loaded by settings.py)
 
 ## Frontend

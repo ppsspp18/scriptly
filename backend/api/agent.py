@@ -25,9 +25,9 @@ class ShakespeareAgent:
         self.fetch_context_callback = fetch_context_callback
         
         # Initialize Groq LLM (Ensure GROQ_API_KEY is loaded in your .env)
-        self.llm = ChatGroq(temperature=0, model_name="openai/gpt-oss-20b")
+        self.llm = ChatGroq(temperature=0, model_name="openai/gpt-oss-120b")
         
-        # Node 1: Grader Chain (json_schema mode: gpt-oss-20b is unreliable with tool-call grading)
+        # Node 1: Grader Chain (json_schema mode: gpt-oss-120b is unreliable with tool-call grading)
         self.structured_grader = self.llm.with_structured_output(GradeDocuments, method="json_schema")
         grade_system = (
             "You are a strict grader assessing relevance of a retrieved document to a user question. "
